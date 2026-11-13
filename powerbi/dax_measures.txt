@@ -1,0 +1,169 @@
+// ============================================================================
+// DAX MEASURES LIBRARY FOR POWER BI DASHBOARD
+// Project: Customer Churn Prediction and Decision Support System
+// Dataset: Telco Retention DSS
+// ============================================================================
+
+// --- PAGE 1: EXECUTIVE OVERVIEW MEASURES ---
+
+Total Customers = 
+COUNTROWS('FactChurnPredictions')
+
+Churned Customers = 
+CALCULATE(
+    COUNTROWS('FactChurnPredictions'),
+    'FactChurnPredictions'[Churn] = "Yes"
+)
+
+Retained Customers = 
+CALCULATE(
+    COUNTROWS('FactChurnPredictions'),
+    'FactChurnPredictions'[Churn] = "No"
+)
+
+Actual Churn Rate = 
+DIVIDE([Churned Customers], [Total Customers], 0)
+
+Actual Churn Rate % = 
+FORMAT([Actual Churn Rate], "0.0%")
+
+Predicted Churn Customers = 
+CALCULATE(
+    COUNTROWS('FactChurnPredictions'),
+    'FactChurnPredictions'[PredictedChurn] = 1
+)
+
+Predicted Churn Rate = 
+DIVIDE([Predicted Churn Customers], [Total Customers], 0)
+
+Predicted Churn Rate % = 
+FORMAT([Predicted Churn Rate], "0.0%")
+
+Total Monthly Revenue = 
+SUM('FactChurnPredictions'[MonthlyCharges])
+
+Monthly Lost Churn Revenue = 
+CALCULATE(
+    SUM('FactChurnPredictions'[MonthlyCharges]),
+    'FactChurnPredictions'[Churn] = "Yes"
+)
+
+Annualized Lost Churn Revenue = 
+[Monthly Lost Churn Revenue] * 12
+
+High-Risk Customers = 
+CALCULATE(
+    COUNTROWS('FactChurnPredictions'),
+    'FactChurnPredictions'[RiskCategory] = "High Risk"
+)
+
+High-Risk Customers % = 
+DIVIDE([High-Risk Customers], [Total Customers], 0)
+
+Medium-Risk Customers = 
+CALCULATE(
+    COUNTROWS('FactChurnPredictions'),
+    'FactChurnPredictions'[RiskCategory] = "Medium Risk"
+)
+
+Low-Risk Customers = 
+CALCULATE(
+    COUNTROWS('FactChurnPredictions'),
+    'FactChurnPredictions'[RiskCategory] = "Low Risk"
+)
+
+High-Risk Revenue at Risk = 
+CALCULATE(
+    SUM('FactChurnPredictions'[MonthlyCharges]),
+    'FactChurnPredictions'[RiskCategory] = "High Risk"
+)
+
+High-Risk Revenue Exposure % = 
+DIVIDE([High-Risk Revenue at Risk], [Total Monthly Revenue], 0)
+
+
+// --- PAGE 2: CUSTOMER CHURN ANALYSIS MEASURES ---
+
+Average Customer Tenure = 
+AVERAGE('FactChurnPredictions'[tenure])
+
+Average Monthly Charges = 
+AVERAGE('FactChurnPredictions'[MonthlyCharges])
+
+Average Total Charges = 
+AVERAGE('FactChurnPredictions'[TotalCharges])
+
+Month-to-Month Churn Rate = 
+CALCULATE(
+    [Actual Churn Rate],
+    'DimContractBilling'[Contract] = "Month-to-month"
+)
+
+Fiber Optic Churn Rate = 
+CALCULATE(
+    [Actual Churn Rate],
+    'DimServices'[InternetService] = "Fiber optic"
+)
+
+Electronic Check Churn Rate = 
+CALCULATE(
+    [Actual Churn Rate],
+    'DimContractBilling'[PaymentMethod] = "Electronic check"
+)
+
+No Tech Support Churn Rate = 
+CALCULATE(
+    [Actual Churn Rate],
+    'DimServices'[TechSupport] = "No"
+)
+
+
+// --- PAGE 3: PREDICTIVE ANALYTICS MEASURES ---
+
+Average Churn Probability = 
+AVERAGE('FactChurnPredictions'[ChurnProbability])
+
+Average Priority Score = 
+AVERAGE('FactChurnPredictions'[RetentionPriorityScore])
+
+High-Risk Average Churn Probability = 
+CALCULATE(
+    [Average Churn Probability],
+    'FactChurnPredictions'[RiskCategory] = "High Risk"
+)
+
+High-Risk Average Priority Score = 
+CALCULATE(
+    [Average Priority Score],
+    'FactChurnPredictions'[RiskCategory] = "High Risk"
+)
+
+Random Forest ROC-AUC = 
+MAX('ModelMetrics'[ROC_AUC])
+
+Random Forest F1-Score = 
+MAX('ModelMetrics'[F1_Score])
+
+
+// --- PAGE 4: RETENTION DECISION SUPPORT MEASURES ---
+
+VIP Action Customers Count = 
+CALCULATE(
+    COUNTROWS('FactChurnPredictions'),
+    SEARCH("VIP", 'FactChurnPredictions'[RecommendedAction], 1, 0) > 0
+)
+
+Contract Migration Targets = 
+CALCULATE(
+    COUNTROWS('FactChurnPredictions'),
+    SEARCH("Contract", 'FactChurnPredictions'[RecommendedAction], 1, 0) > 0
+)
+
+Priority Rank = 
+RANKX(
+    ALLSELECTED('FactChurnPredictions'),
+    CALCULATE(MAX('FactChurnPredictions'[RetentionPriorityScore])),
+    ,
+    DESC,
+    Dense
+)

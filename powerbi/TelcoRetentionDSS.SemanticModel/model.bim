@@ -1,0 +1,232 @@
+{
+  "name": "TelcoRetentionDSS",
+  "compatibilityLevel": 1567,
+  "model": {
+    "culture": "en-US",
+    "dataAccessOptions": {
+      "legacyRedirects": true,
+      "returnErrorValuesAsNull": true
+    },
+    "defaultPowerBIDataSourceVersion": "powerBI_V3",
+    "tables": [
+      {
+        "name": "FactChurnPredictions",
+        "columns": [
+          {
+            "name": "CustomerID",
+            "dataType": "string",
+            "sourceColumn": "customerID"
+          },
+          {
+            "name": "Tenure",
+            "dataType": "int64",
+            "sourceColumn": "tenure"
+          },
+          {
+            "name": "MonthlyCharges",
+            "dataType": "double",
+            "sourceColumn": "MonthlyCharges"
+          },
+          {
+            "name": "TotalCharges",
+            "dataType": "double",
+            "sourceColumn": "TotalCharges"
+          },
+          {
+            "name": "Churn",
+            "dataType": "string",
+            "sourceColumn": "Churn"
+          },
+          {
+            "name": "ChurnBinary",
+            "dataType": "int64",
+            "sourceColumn": "ChurnBinary"
+          },
+          {
+            "name": "ChurnProbability",
+            "dataType": "double",
+            "sourceColumn": "ChurnProbability"
+          },
+          {
+            "name": "PredictedChurn",
+            "dataType": "int64",
+            "sourceColumn": "PredictedChurn"
+          },
+          {
+            "name": "RiskCategory",
+            "dataType": "string",
+            "sourceColumn": "RiskCategory"
+          },
+          {
+            "name": "RetentionPriorityScore",
+            "dataType": "double",
+            "sourceColumn": "RetentionPriorityScore"
+          },
+          {
+            "name": "MonthlyRevenueExposure",
+            "dataType": "double",
+            "sourceColumn": "MonthlyRevenueExposure"
+          },
+          {
+            "name": "RecommendedAction",
+            "dataType": "string",
+            "sourceColumn": "RecommendedAction"
+          }
+        ]
+      },
+      {
+        "name": "DimCustomer",
+        "columns": [
+          {
+            "name": "CustomerID",
+            "dataType": "string",
+            "sourceColumn": "customerID"
+          },
+          {
+            "name": "Gender",
+            "dataType": "string",
+            "sourceColumn": "gender"
+          },
+          {
+            "name": "SeniorCitizen",
+            "dataType": "int64",
+            "sourceColumn": "SeniorCitizen"
+          },
+          {
+            "name": "Partner",
+            "dataType": "string",
+            "sourceColumn": "Partner"
+          },
+          {
+            "name": "Dependents",
+            "dataType": "string",
+            "sourceColumn": "Dependents"
+          },
+          {
+            "name": "SeniorCitizenLabel",
+            "dataType": "string",
+            "sourceColumn": "SeniorCitizenLabel"
+          }
+        ]
+      },
+      {
+        "name": "DimServices",
+        "columns": [
+          {
+            "name": "CustomerID",
+            "dataType": "string",
+            "sourceColumn": "customerID"
+          },
+          {
+            "name": "PhoneService",
+            "dataType": "string",
+            "sourceColumn": "PhoneService"
+          },
+          {
+            "name": "MultipleLines",
+            "dataType": "string",
+            "sourceColumn": "MultipleLines"
+          },
+          {
+            "name": "InternetService",
+            "dataType": "string",
+            "sourceColumn": "InternetService"
+          },
+          {
+            "name": "OnlineSecurity",
+            "dataType": "string",
+            "sourceColumn": "OnlineSecurity"
+          },
+          {
+            "name": "OnlineBackup",
+            "dataType": "string",
+            "sourceColumn": "OnlineBackup"
+          },
+          {
+            "name": "DeviceProtection",
+            "dataType": "string",
+            "sourceColumn": "DeviceProtection"
+          },
+          {
+            "name": "TechSupport",
+            "dataType": "string",
+            "sourceColumn": "TechSupport"
+          },
+          {
+            "name": "StreamingTV",
+            "dataType": "string",
+            "sourceColumn": "StreamingTV"
+          },
+          {
+            "name": "StreamingMovies",
+            "dataType": "string",
+            "sourceColumn": "StreamingMovies"
+          },
+          {
+            "name": "ActiveServicesCount",
+            "dataType": "int64",
+            "sourceColumn": "ActiveServicesCount"
+          }
+        ]
+      },
+      {
+        "name": "DimContractBilling",
+        "columns": [
+          {
+            "name": "CustomerID",
+            "dataType": "string",
+            "sourceColumn": "customerID"
+          },
+          {
+            "name": "Contract",
+            "dataType": "string",
+            "sourceColumn": "Contract"
+          },
+          {
+            "name": "PaperlessBilling",
+            "dataType": "string",
+            "sourceColumn": "PaperlessBilling"
+          },
+          {
+            "name": "PaymentMethod",
+            "dataType": "string",
+            "sourceColumn": "PaymentMethod"
+          },
+          {
+            "name": "TenureCohort",
+            "dataType": "string",
+            "sourceColumn": "TenureCohort"
+          },
+          {
+            "name": "ChargeTier",
+            "dataType": "string",
+            "sourceColumn": "ChargeTier"
+          }
+        ]
+      }
+    ],
+    "relationships": [
+      {
+        "name": "Rel_Customer_Fact",
+        "fromTable": "FactChurnPredictions",
+        "fromColumn": "CustomerID",
+        "toTable": "DimCustomer",
+        "toColumn": "CustomerID"
+      },
+      {
+        "name": "Rel_Services_Fact",
+        "fromTable": "FactChurnPredictions",
+        "fromColumn": "CustomerID",
+        "toTable": "DimServices",
+        "toColumn": "CustomerID"
+      },
+      {
+        "name": "Rel_Billing_Fact",
+        "fromTable": "FactChurnPredictions",
+        "fromColumn": "CustomerID",
+        "toTable": "DimContractBilling",
+        "toColumn": "CustomerID"
+      }
+    ]
+  }
+}
